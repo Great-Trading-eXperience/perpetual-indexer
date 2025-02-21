@@ -1,5 +1,5 @@
 import { ponder } from "ponder:registry";
-import { depositCancellation, depositCreation, market, orderCancellation, orderCreation } from "ponder:schema";
+import { cancelledDeposit, cancelledOrder, deposit, market, pendingDeposit, pendingOrder, price as tokenPrice } from "ponder:schema";
 
 ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
   await context.db.insert(market).values({
@@ -15,9 +15,9 @@ ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
 
 ponder.on("DepositHandler:DepositCreated", async ({ event, context }) => {
   const deposit = event.args.deposit;
-  
-  await context.db.insert(depositCreation).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+
+  await context.db.insert(pendingDeposit).values({
+    id: event.args.key.toString(),
     key: event.args.key.toString(),
     account: deposit.account,
     receiver: deposit.receiver,
@@ -34,20 +34,72 @@ ponder.on("DepositHandler:DepositCreated", async ({ event, context }) => {
   });
 });
 
-ponder.on("DepositHandler:DepositCancelled", async ({ event, context }) => {
-  await context.db.insert(depositCancellation).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+ponder.on("DepositHandler:DepositExecuted", async ({ event, context }) => {
+  const pendingDepositData = await context.db.find(pendingDeposit, {
+    id: event.args.key.toString(),
+  });
+
+  if (!pendingDepositData) {
+    return;
+  }
+
+  await context.db.insert(deposit).values({
+    id: event.args.key.toString(),
     key: event.args.key.toString(),
+    account: pendingDepositData.account,
+    receiver: pendingDepositData.receiver,
+    uiFeeReceiver: pendingDepositData.uiFeeReceiver,
+    marketToken: pendingDepositData.marketToken,
+    initialLongToken: pendingDepositData.initialLongToken,
+    initialShortToken: pendingDepositData.initialShortToken,
+    executionFee: pendingDepositData.executionFee?.toString(),
+    initialLongTokenAmount: pendingDepositData.initialLongTokenAmount?.toString(),
+    initialShortTokenAmount: pendingDepositData.initialShortTokenAmount?.toString(),
     timestamp: Number(event.block.timestamp),
     blockNumber: Number(event.block.number),
     transactionHash: event.transaction.hash,
+  });
+
+  await context.db.delete(pendingDeposit, {
+    id: event.args.key.toString(),
+  });
+});
+
+ponder.on("DepositHandler:DepositCancelled", async ({ event, context }) => {
+  const pendingDepositData = await context.db.find(pendingDeposit, {
+    id: event.args.key.toString(),
+  });
+
+  if (!pendingDepositData) {
+    return;
+  }
+
+  await context.db.insert(cancelledDeposit).values({
+    id: event.args.key.toString(),
+    key: event.args.key.toString(),
+    account: pendingDepositData.account,
+    receiver: pendingDepositData.receiver,
+    uiFeeReceiver: pendingDepositData.uiFeeReceiver,
+    marketToken: pendingDepositData.marketToken,
+    initialLongToken: pendingDepositData.initialLongToken,
+    initialShortToken: pendingDepositData.initialShortToken,
+    executionFee: pendingDepositData.executionFee?.toString(),
+    initialLongTokenAmount: pendingDepositData.initialLongTokenAmount?.toString(),
+    initialShortTokenAmount: pendingDepositData.initialShortTokenAmount?.toString(),
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
+  });
+
+  await context.db.delete(pendingDeposit, {
+    id: event.args.key.toString(),
   });
 });
 
 ponder.on("OrderHandler:OrderCreated", async ({ event, context }) => {
   const order = event.args.deposit;
-  
-  await context.db.insert(orderCreation).values({
+
+  await context.db.insert(pendingOrder).values({
     id: `${event.block.number}-${event.transaction.hash}`,
     key: Number(event.args.key),
     account: order.account,
@@ -74,11 +126,30 @@ ponder.on("OrderHandler:OrderCreated", async ({ event, context }) => {
 });
 
 ponder.on("OrderHandler:OrderCancelled", async ({ event, context }) => {
-  await context.db.insert(orderCancellation).values({
+  await context.db.insert(cancelledOrder).values({
     id: `${event.block.number}-${event.transaction.hash}`,
     key: event.args.key.toString(),
     timestamp: Number(event.block.timestamp),
     blockNumber: Number(event.block.number),
     transactionHash: event.transaction.hash,
   });
+});
+
+ponder.on("Oracle:PriceUpdate", async ({ event, context }) => {
+  const price = event.args.price;
+  const token = event.args.token;
+
+  await context.db.insert(tokenPrice).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    token,
+    price: price.toString(),
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
+  })
+    .onConflictDoUpdate({
+      token,
+      price: price.toString(),
+      timestamp: Number(event.block.timestamp),
+    });
 });

@@ -4,6 +4,7 @@ import { http } from "viem";
 import { DepositHandlerABI } from "./abis/DepositHandlerABI";
 import { MarketFactoryABI } from "./abis/MarketFactoryABI";
 import { OrderHandlerABI } from "./abis/OrderHandlerABI";
+import { OracleABI } from "./abis/OracleABI";
 
 dotenv.config();
 
@@ -29,6 +30,10 @@ export default createConfig({
       chainId: 11155111,
       transport: http(process.env.PONDER_RPC_URL_5),
     },
+    riseTestnet: {
+      chainId: 4623992,
+      transport: http(process.env.PONDER_RPC_URL_6),
+    },
   },
   contracts: {
     MarketFactory: {
@@ -47,6 +52,12 @@ export default createConfig({
       network: "anvil",
       abi: DepositHandlerABI,
       address: process.env.DEPOSIT_HANDLER_ADDRESS as `0x${string}`,
+      startBlock: process.env.STARTED_BLOCK as unknown as number,
+    },
+    Oracle: {
+      network: "anvil",
+      abi: OracleABI,
+      address: process.env.ORACLE_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
   },

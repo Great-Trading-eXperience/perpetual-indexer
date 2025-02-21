@@ -10,7 +10,7 @@ export const market = onchainTable("market", (t) => ({
   transactionHash: t.text(),
 }));
 
-export const depositCreation = onchainTable("deposit_creation", (t) => ({
+export const pendingDeposit = onchainTable("pending_deposit", (t) => ({
   id: t.text().primaryKey(),
   key: t.numeric(),
   account: t.text(),
@@ -27,15 +27,41 @@ export const depositCreation = onchainTable("deposit_creation", (t) => ({
   transactionHash: t.text(),
 }));
 
-export const depositCancellation = onchainTable("deposit_cancellation", (t) => ({
+export const deposit = onchainTable("deposit", (t) => ({
   id: t.text().primaryKey(),
   key: t.numeric(),
+  account: t.text(),
+  receiver: t.text(),
+  uiFeeReceiver: t.text(),
+  marketToken: t.text(),
+  initialLongToken: t.text(),
+  initialShortToken: t.text(),
+  executionFee: t.numeric(),
+  initialLongTokenAmount: t.numeric(),
+  initialShortTokenAmount: t.numeric(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
   transactionHash: t.text(),
 }));
 
-export const orderCreation = onchainTable("order_creation", (t) => ({
+export const cancelledDeposit = onchainTable("cancelled_deposit", (t) => ({
+  id: t.text().primaryKey(),
+  key: t.numeric(),
+  account: t.text(),
+  receiver: t.text(),
+  uiFeeReceiver: t.text(),
+  marketToken: t.text(),
+  initialLongToken: t.text(),
+  initialShortToken: t.text(),
+  executionFee: t.numeric(),
+  initialLongTokenAmount: t.numeric(),
+  initialShortTokenAmount: t.numeric(),
+  timestamp: t.integer(),
+  blockNumber: t.integer(),
+  transactionHash: t.text(),
+}));
+
+export const pendingOrder = onchainTable("pending_order", (t) => ({
   id: t.text().primaryKey(),
   key: t.integer(),
   account: t.text(),
@@ -60,10 +86,18 @@ export const orderCreation = onchainTable("order_creation", (t) => ({
   transactionHash: t.text(),
 }));
 
-export const orderCancellation = onchainTable("order_cancellation", (t) => ({
+export const cancelledOrder = onchainTable("cancelled_order", (t) => ({
   id: t.text().primaryKey(),
   key: t.numeric(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
   transactionHash: t.text(),
+}));
+
+export const price = onchainTable("price", (t) => ({
+  id: t.text().primaryKey(),
+  token: t.text(),
+  price: t.numeric(),
+  timestamp: t.integer(),
+  blockNumber: t.integer(),
 }));
