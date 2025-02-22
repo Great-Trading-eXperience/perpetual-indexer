@@ -3,8 +3,10 @@ import { createConfig } from "ponder";
 import { http } from "viem";
 import { DepositHandlerABI } from "./abis/DepositHandlerABI";
 import { MarketFactoryABI } from "./abis/MarketFactoryABI";
-import { OrderHandlerABI } from "./abis/OrderHandlerABI";
+import MarketHandlerABI from "./abis/MarketHandlerABI";
 import { OracleABI } from "./abis/OracleABI";
+import { OrderHandlerABI } from "./abis/OrderHandlerABI";
+import PositionHandlerABI from "./abis/PositionHandlerABI";
 
 dotenv.config();
 
@@ -37,25 +39,37 @@ export default createConfig({
   },
   contracts: {
     MarketFactory: {
-      network: "anvil",
+      network: "riseTestnet",
       abi: MarketFactoryABI,
       address: process.env.MARKET_FACTORY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     OrderHandler: {
-      network: "anvil",
+      network: "riseTestnet",
       abi: OrderHandlerABI,
       address: process.env.ORDER_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     DepositHandler: {
-      network: "anvil",
+      network: "riseTestnet",
       abi: DepositHandlerABI,
       address: process.env.DEPOSIT_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
+    PositionHandler: {
+      network: "riseTestnet",
+      abi: PositionHandlerABI,
+      address: process.env.POSITION_HANDLER_ADDRESS as `0x${string}`,
+      startBlock: process.env.STARTED_BLOCK as unknown as number,
+    },
+    MarketHandler: {
+      network: "riseTestnet",
+      abi: MarketHandlerABI,
+      address: process.env.MARKET_HANDLER_ADDRESS as `0x${string}`,
+      startBlock: process.env.STARTED_BLOCK as unknown as number,
+    },
     Oracle: {
-      network: "anvil",
+      network: "riseTestnet",
       abi: OracleABI,
       address: process.env.ORACLE_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,

@@ -10,23 +10,6 @@ export const market = onchainTable("market", (t) => ({
   transactionHash: t.text(),
 }));
 
-export const pendingDeposit = onchainTable("pending_deposit", (t) => ({
-  id: t.text().primaryKey(),
-  key: t.numeric(),
-  account: t.text(),
-  receiver: t.text(),
-  uiFeeReceiver: t.text(),
-  marketToken: t.text(),
-  initialLongToken: t.text(),
-  initialShortToken: t.text(),
-  executionFee: t.numeric(),
-  initialLongTokenAmount: t.numeric(),
-  initialShortTokenAmount: t.numeric(),
-  timestamp: t.integer(),
-  blockNumber: t.integer(),
-  transactionHash: t.text(),
-}));
-
 export const deposit = onchainTable("deposit", (t) => ({
   id: t.text().primaryKey(),
   key: t.numeric(),
@@ -39,29 +22,15 @@ export const deposit = onchainTable("deposit", (t) => ({
   executionFee: t.numeric(),
   initialLongTokenAmount: t.numeric(),
   initialShortTokenAmount: t.numeric(),
+  isExecuted: t.boolean(),
+  isCancelled: t.boolean(),
+  updatedAtTime: t.integer(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
   transactionHash: t.text(),
 }));
 
-export const cancelledDeposit = onchainTable("cancelled_deposit", (t) => ({
-  id: t.text().primaryKey(),
-  key: t.numeric(),
-  account: t.text(),
-  receiver: t.text(),
-  uiFeeReceiver: t.text(),
-  marketToken: t.text(),
-  initialLongToken: t.text(),
-  initialShortToken: t.text(),
-  executionFee: t.numeric(),
-  initialLongTokenAmount: t.numeric(),
-  initialShortTokenAmount: t.numeric(),
-  timestamp: t.integer(),
-  blockNumber: t.integer(),
-  transactionHash: t.text(),
-}));
-
-export const pendingOrder = onchainTable("pending_order", (t) => ({
+export const order = onchainTable("order", (t) => ({
   id: t.text().primaryKey(),
   key: t.integer(),
   account: t.text(),
@@ -81,14 +50,29 @@ export const pendingOrder = onchainTable("pending_order", (t) => ({
   validFromTime: t.integer(),
   isLong: t.boolean(),
   isFrozen: t.boolean(),
+  isExecuted: t.boolean(),
+  isCancelled: t.boolean(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
   transactionHash: t.text(),
 }));
 
-export const cancelledOrder = onchainTable("cancelled_order", (t) => ({
+export const position = onchainTable("position", (t) => ({
   id: t.text().primaryKey(),
-  key: t.numeric(),
+  key: t.text(),
+  account: t.text(),
+  marketToken: t.text(),
+  collateralToken: t.text(),
+  sizeInUsd: t.numeric(),
+  sizeInTokens: t.numeric(),
+  collateralAmount: t.numeric(),
+  borrowingFactor: t.numeric(),
+  fundingFeeAmountPerSize: t.numeric(),
+  longTokenClaimableFundingAmountPerSize: t.numeric(),
+  shortTokenClaimableFundingAmountPerSize: t.numeric(),
+  increasedAtTime: t.integer(),
+  decreasedAtTime: t.integer(),
+  isLong: t.boolean(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
   transactionHash: t.text(),
