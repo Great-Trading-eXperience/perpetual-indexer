@@ -1,5 +1,5 @@
 import { ponder } from "ponder:registry";
-import { position, order, deposit, market, price as tokenPrice, openInterest, fundingFee, liquidation } from "ponder:schema";
+import { deposit, fundingFee, liquidation, market, openInterest, order, position, price as tokenPrice } from "ponder:schema";
 
 ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
   await context.db.insert(market).values({
@@ -95,28 +95,26 @@ ponder.on("DepositHandler:DepositCancelled", async ({ event, context }) => {
 });
 
 ponder.on("OrderHandler:OrderCreated", async ({ event, context }) => {
-  const orderData = event.args.deposit;
-
   await context.db.insert(order).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+    id: event.args.key.toString(),
     key: Number(event.args.key),
-    account: orderData.account,
-    receiver: orderData.receiver,
-    cancellationReceiver: orderData.cancellationReceiver,
-    callbackContract: orderData.callbackContract,
-    uiFeeReceiver: orderData.uiFeeReceiver,
-    marketToken: orderData.marketToken,
-    initialCollateralToken: orderData.initialCollateralToken,
-    orderType: Number(orderData.orderType),
-    sizeDeltaUsd: orderData.sizeDeltaUsd.toString(),
-    initialCollateralDeltaAmount: orderData.initialCollateralDeltaAmount.toString(),
-    triggerPrice: orderData.triggerPrice.toString(),
-    acceptablePrice: orderData.acceptablePrice.toString(),
-    executionFee: orderData.executionFee.toString(),
-    updatedAtTime: Number(orderData.updatedAtTime),
-    validFromTime: Number(orderData.validFromTime),
-    isLong: orderData.isLong,
-    isFrozen: orderData.isFrozen,
+    account: event.args.account,
+    receiver: event.args.receiver,
+    cancellationReceiver: event.args.cancellationReceiver,
+    callbackContract: event.args.callbackContract,
+    uiFeeReceiver: event.args.uiFeeReceiver,
+    marketToken: event.args.marketToken,
+    initialCollateralToken: event.args.initialCollateralToken,
+    orderType: Number(event.args.orderType),
+    sizeDeltaUsd: event.args.sizeDeltaUsd.toString(),
+    initialCollateralDeltaAmount: event.args.initialCollateralDeltaAmount.toString(),
+    triggerPrice: event.args.triggerPrice.toString(),
+    acceptablePrice: event.args.acceptablePrice.toString(),
+    executionFee: event.args.executionFee.toString(),
+    updatedAtTime: Number(event.args.updatedAtTime),
+    validFromTime: Number(event.args.validFromTime),
+    isLong: event.args.isLong,
+    isFrozen: event.args.isFrozen,
     timestamp: Number(event.block.timestamp),
     blockNumber: Number(event.block.number),
     transactionHash: event.transaction.hash,
@@ -165,7 +163,7 @@ ponder.on("OrderHandler:OrderProcessed", async ({ event, context }) => {
 
 ponder.on("PositionHandler:PositionIncreased", async ({ event, context }) => {
   await context.db.insert(position).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+    id: event.args.positionKey.toString(),
     key: event.args.positionKey.toString(),
     account: event.args.account,
     marketToken: event.args.market,
@@ -191,7 +189,7 @@ ponder.on("PositionHandler:PositionIncreased", async ({ event, context }) => {
 
 ponder.on("PositionHandler:PositionDecreased", async ({ event, context }) => {
   await context.db.insert(position).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+    id: event.args.positionKey.toString(),
     key: event.args.positionKey.toString(),
     account: event.args.account,
     marketToken: event.args.market,
@@ -214,6 +212,21 @@ ponder.on("PositionHandler:PositionDecreased", async ({ event, context }) => {
 });
 
 ponder.on("PositionHandler:PositionLiquidated", async ({ event, context }) => {
+  const existingPosition = await context.db.find(position, {
+    id: event.args.positionKey.toString(),
+  });
+
+  if (!existingPosition) {
+    return;
+  }
+
+  await context.db.insert(position).values({
+    id: existingPosition.id,
+    liquidatedAtTime: Number(event.block.timestamp),
+  }).onConflictDoUpdate({
+    liquidatedAtTime: Number(event.block.timestamp),
+  });
+
   await context.db.insert(liquidation).values({
     id: `${event.block.number}-${event.transaction.hash}`,
     key: event.args.positionKey.toString(),
@@ -227,6 +240,12 @@ ponder.on("PositionHandler:PositionLiquidated", async ({ event, context }) => {
     timestamp: Number(event.block.timestamp),
     blockNumber: Number(event.block.number),
     transactionHash: event.transaction.hash,
+  }).onConflictDoUpdate({
+    collateralAmount: event.args.collateralAmount.toString(),
+    liquidationFee: event.args.liquidationFee.toString(),
+    liquidationPrice: event.args.liquidationPrice.toString(),
+    liquidator: event.args.liquidator,
+    timestamp: Number(event.block.timestamp),
   });
 });
 

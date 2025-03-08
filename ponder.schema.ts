@@ -70,6 +70,7 @@ export const position = onchainTable("position", (t) => ({
   cumulativeBorrowingFee: t.numeric(),
   increasedAtTime: t.integer(),
   decreasedAtTime: t.integer(),
+  liquidatedAtTime: t.integer(),
   isLong: t.boolean(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
