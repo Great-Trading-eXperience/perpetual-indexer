@@ -66,10 +66,8 @@ export const position = onchainTable("position", (t) => ({
   sizeInUsd: t.numeric(),
   sizeInTokens: t.numeric(),
   collateralAmount: t.numeric(),
-  borrowingFactor: t.numeric(),
-  fundingFeeAmountPerSize: t.numeric(),
-  longTokenClaimableFundingAmountPerSize: t.numeric(),
-  shortTokenClaimableFundingAmountPerSize: t.numeric(),
+  cumulativeFundingFee: t.numeric(),
+  cumulativeBorrowingFee: t.numeric(),
   increasedAtTime: t.integer(),
   decreasedAtTime: t.integer(),
   isLong: t.boolean(),
@@ -84,4 +82,39 @@ export const price = onchainTable("price", (t) => ({
   price: t.numeric(),
   timestamp: t.integer(),
   blockNumber: t.integer(),
+}));
+
+export const liquidation = onchainTable("liquidation", (t) => ({
+  id: t.text().primaryKey(),
+  key: t.text(),
+  account: t.text(),
+  marketToken: t.text(),
+  collateralToken: t.text(),
+  collateralAmount: t.numeric(),
+  liquidationFee: t.numeric(),
+  liquidationPrice: t.numeric(),
+  liquidator: t.text(),
+  timestamp: t.integer(),
+  blockNumber: t.integer(),
+  transactionHash: t.text(),
+}));
+
+export const openInterest = onchainTable("openInterest", (t) => ({
+  id: t.text().primaryKey(),
+  market: t.text(),
+  token: t.text(),
+  openInterest: t.numeric(),
+  timestamp: t.integer(),
+  blockNumber: t.integer(),
+  transactionHash: t.text(),
+}));
+
+export const fundingFee = onchainTable("fundingFee", (t) => ({
+  id: t.text().primaryKey(),
+  marketToken: t.text(),
+  collateralToken: t.text(),
+  fundingFee: t.numeric(),
+  timestamp: t.integer(),
+  blockNumber: t.integer(),
+  transactionHash: t.text(),
 }));

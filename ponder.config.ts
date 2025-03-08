@@ -3,10 +3,10 @@ import { createConfig } from "ponder";
 import { http } from "viem";
 import { DepositHandlerABI } from "./abis/DepositHandlerABI";
 import { MarketFactoryABI } from "./abis/MarketFactoryABI";
-import MarketHandlerABI from "./abis/MarketHandlerABI";
 import { OracleABI } from "./abis/OracleABI";
 import { OrderHandlerABI } from "./abis/OrderHandlerABI";
-import PositionHandlerABI from "./abis/PositionHandlerABI";
+import { PositionHandlerABI } from "./abis/PositionHandlerABI";
+import { MarketHandlerABI } from "./abis/MarketHandlerABI";
 
 dotenv.config();
 
@@ -36,40 +36,44 @@ export default createConfig({
       chainId: 4623992,
       transport: http(process.env.PONDER_RPC_URL_6),
     },
+    monadTestnet: {
+      chainId: 10143,
+      transport: http(process.env.PONDER_RPC_URL_7),
+    },
   },
   contracts: {
     MarketFactory: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: MarketFactoryABI,
       address: process.env.MARKET_FACTORY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     OrderHandler: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: OrderHandlerABI,
       address: process.env.ORDER_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     DepositHandler: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: DepositHandlerABI,
       address: process.env.DEPOSIT_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     PositionHandler: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: PositionHandlerABI,
       address: process.env.POSITION_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     MarketHandler: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: MarketHandlerABI,
       address: process.env.MARKET_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     Oracle: {
-      network: "riseTestnet",
+      network: "monadTestnet",
       abi: OracleABI,
       address: process.env.ORACLE_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,

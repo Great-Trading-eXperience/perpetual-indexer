@@ -1,9 +1,9 @@
 import { ponder } from "ponder:registry";
-import { position, order, deposit, market, price as tokenPrice } from "ponder:schema";
+import { position, order, deposit, market, price as tokenPrice, openInterest, fundingFee, liquidation } from "ponder:schema";
 
 ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
   await context.db.insert(market).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+    id: event.args.marketToken,
     longToken: event.args.longToken,
     shortToken: event.args.shortToken,
     marketToken: event.args.marketToken,
@@ -169,10 +169,13 @@ ponder.on("PositionHandler:PositionIncreased", async ({ event, context }) => {
     key: event.args.positionKey.toString(),
     account: event.args.account,
     marketToken: event.args.market,
+    isLong: event.args.isLong,
     collateralToken: event.args.collateralToken,
     sizeInTokens: event.args.sizeInTokens.toString(),
     sizeInUsd: event.args.sizeInUsd.toString(),
     collateralAmount: event.args.collateralAmount.toString(),
+    cumulativeFundingFee: event.args.cumulativeFundingFee.toString(),
+    cumulativeBorrowingFee: event.args.cumulativeBorrowingFee.toString(),
     increasedAtTime: Number(event.args.increasedAtTime),
     timestamp: Number(event.block.timestamp),
     blockNumber: Number(event.block.number),
@@ -192,6 +195,7 @@ ponder.on("PositionHandler:PositionDecreased", async ({ event, context }) => {
     key: event.args.positionKey.toString(),
     account: event.args.account,
     marketToken: event.args.market,
+    isLong: event.args.isLong,
     collateralToken: event.args.collateralToken,
     sizeInTokens: event.args.sizeInTokens.toString(),
     sizeInUsd: event.args.sizeInUsd.toString(),
@@ -206,6 +210,23 @@ ponder.on("PositionHandler:PositionDecreased", async ({ event, context }) => {
     collateralAmount: event.args.collateralAmount.toString(),
     decreasedAtTime: Number(event.args.decreasedAtTime),
     timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("PositionHandler:PositionLiquidated", async ({ event, context }) => {
+  await context.db.insert(liquidation).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    key: event.args.positionKey.toString(),
+    account: event.args.account,
+    marketToken: event.args.market,
+    collateralToken: event.args.collateralToken,
+    collateralAmount: event.args.collateralAmount.toString(),
+    liquidationFee: event.args.liquidationFee.toString(),
+    liquidationPrice: event.args.liquidationPrice.toString(),
+    liquidator: event.args.liquidator,
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
   });
 });
 
@@ -226,4 +247,23 @@ ponder.on("Oracle:PriceUpdate", async ({ event, context }) => {
       price: price.toString(),
       timestamp: Number(event.block.timestamp),
     });
+});
+
+ponder.on("MarketHandler:OpenInterestSet", async ({ event, context }) => {
+  await context.db.insert(openInterest).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    market: event.args.market,
+    token: event.args.token,
+    openInterest: event.args.amount.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("MarketHandler:FundingFeeSet", async ({ event, context }) => {
+  await context.db.insert(fundingFee).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    market: event.args.market,
+    fundingFee: event.args.amount.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
 });
