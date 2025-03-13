@@ -164,8 +164,10 @@ export const curator = onchainTable("curator", (t) => ({
 export const assetVault = onchainTable("assetVault", (t) => ({
   id: t.text().primaryKey(),
   curator: t.text(),
+  name: t.text(),
   asset: t.text(),
   token: t.text(),
+  tvl: t.numeric(),
   tokenName: t.text(),
   tokenSymbol: t.text(),
   timestamp: t.integer(),

@@ -49,49 +49,49 @@ export default createConfig({
   },
   contracts: {
     MarketFactory: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: MarketFactoryABI,
       address: process.env.MARKET_FACTORY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     OrderHandler: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: OrderHandlerABI,
       address: process.env.ORDER_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     DepositHandler: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: DepositHandlerABI,
       address: process.env.DEPOSIT_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     PositionHandler: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: PositionHandlerABI,
       address: process.env.POSITION_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     WithdrawHandler: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: WithdrawHandlerABI,
       address: process.env.WITHDRAW_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     MarketHandler: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: MarketHandlerABI,
       address: process.env.MARKET_HANDLER_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     Oracle: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: OracleABI,
       address: process.env.ORACLE_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     Curator: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: CuratorABI,
       address: factory({
         address: process.env.CURATOR_FACTORY_ADDRESS as `0x${string}`,
@@ -101,7 +101,7 @@ export default createConfig({
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     AssetVault: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: AssetVaultABI,
       address: factory({
         address: process.env.VAULT_FACTORY_ADDRESS as `0x${string}`,
@@ -111,19 +111,19 @@ export default createConfig({
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     CuratorRegistry: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: CuratorRegistryABI,
       address: process.env.CURATOR_REGISTRY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     CuratorFactory: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: CuratorFactoryABI,
       address: process.env.CURATOR_FACTORY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,
     },
     VaultFactory: {
-      network: "monadTestnet",
+      network: process.env.NETWORK as "mainnet" | "anvil" | "arbitrumSepolia" | "conduit" | "sepolia" | "riseTestnet" | "monadTestnet",
       abi: VaultFactoryABI,
       address: process.env.VAULT_FACTORY_ADDRESS as `0x${string}`,
       startBlock: process.env.STARTED_BLOCK as unknown as number,

@@ -340,7 +340,7 @@ ponder.on("CuratorFactory:CuratorContractDeployed", async ({ event, context }) =
   await context.db.insert(curator).values({
     id: event.args.curatorContract,
     curator: event.args.curator,
-    name: event.args.name,
+    name: event.args.name ?? '-',
     contractAddress: event.args.curatorContract,
     timestamp: Number(event.block.timestamp),
   }).onConflictDoUpdate({
@@ -392,6 +392,25 @@ ponder.on("AssetVault:MarketUpdated", async ({ event, context }) => {
 });
 
 ponder.on("AssetVault:Deposit", async ({ event, context }) => {
+  const assetVaultData = await context.db.find(assetVault, {
+    id: event.transaction.to as string,
+  });
+
+  if (!assetVaultData) {
+    return;
+  }
+
+  const tvl = Number(assetVaultData.tvl) + Number(event.args.assets);
+
+  await context.db.insert(assetVault).values({
+    id: assetVaultData.id,
+    tvl: tvl.toString(),
+    timestamp: Number(event.block.timestamp),
+  }).onConflictDoUpdate({
+    tvl: tvl.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+
   await context.db.insert(curatorVaultDeposit).values({
     id: `${event.block.number}-${event.transaction.hash}`,
     assetVault: event.transaction.to,
@@ -405,6 +424,25 @@ ponder.on("AssetVault:Deposit", async ({ event, context }) => {
 });
 
 ponder.on("AssetVault:Withdraw", async ({ event, context }) => {
+  const assetVaultData = await context.db.find(assetVault, {
+    id: event.transaction.to as string,
+  });
+
+  if (!assetVaultData) {
+    return;
+  }
+
+  const tvl = Number(assetVaultData.tvl) - Number(event.args.assets);
+
+  await context.db.insert(assetVault).values({
+    id: assetVaultData.id,
+    tvl: tvl.toString(),
+    timestamp: Number(event.block.timestamp),
+  }).onConflictDoUpdate({
+    tvl: tvl.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+
   await context.db.insert(curatorVaultWithdrawal).values({
     id: `${event.block.number}-${event.transaction.hash}`,
     assetVault: event.transaction.to,
