@@ -1,9 +1,10 @@
 import { ponder } from "ponder:registry";
-import { deposit, fundingFee, liquidation, market, openInterest, order, position, price as tokenPrice } from "ponder:schema";
+import { allocation, assetVault, curator, curatorVaultDeposit, curatorVaultWithdrawal, deposit, fundingFee, liquidation, market, openInterest, order, position, price, size, price as tokenPrice } from "ponder:schema";
 
 ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
   await context.db.insert(market).values({
     id: event.args.marketToken,
+    name: event.args.marketName,
     longToken: event.args.longToken,
     shortToken: event.args.shortToken,
     marketToken: event.args.marketToken,
@@ -162,6 +163,26 @@ ponder.on("OrderHandler:OrderProcessed", async ({ event, context }) => {
 });
 
 ponder.on("PositionHandler:PositionIncreased", async ({ event, context }) => {
+  const price = Number(event.args.sizeInUsd) / Number(event.args.sizeInTokens);
+
+  const existingSize = await context.db.find(size, {
+    id: `${event.args.market}-${price.toString()}`,
+  });
+
+  await context.db.insert(size).values({
+    id: `${event.args.market}-${price.toString()}`,
+    marketToken: event.args.market,
+    price: price.toString(),
+    size: existingSize ? (Number(existingSize.size) + Number(event.args.sizeInUsd)).toString() : event.args.sizeInUsd.toString(),
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
+  }).onConflictDoUpdate({
+    price: price.toString(),
+    size: existingSize ? (Number(existingSize.size) + Number(event.args.sizeInUsd)).toString() : event.args.sizeInUsd.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+
   await context.db.insert(position).values({
     id: event.args.positionKey.toString(),
     key: event.args.positionKey.toString(),
@@ -188,6 +209,26 @@ ponder.on("PositionHandler:PositionIncreased", async ({ event, context }) => {
 });
 
 ponder.on("PositionHandler:PositionDecreased", async ({ event, context }) => {
+  const price = Number(event.args.sizeInUsd) / Number(event.args.sizeInTokens);
+
+  const existingSize = await context.db.find(size, {
+    id: `${event.args.market}-${price.toString()}`,
+  });
+
+  await context.db.insert(size).values({
+    id: `${event.args.market}-${price.toString()}`,
+    marketToken: event.args.market,
+    price: price.toString(),
+    size: existingSize ? (Number(existingSize.size) - Number(event.args.sizeInUsd)).toString() : event.args.sizeInUsd.toString(),
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
+  }).onConflictDoUpdate({
+    price: price.toString(),
+    size: existingSize ? (Number(existingSize.size) - Number(event.args.sizeInUsd)).toString() : event.args.sizeInUsd.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+  
   await context.db.insert(position).values({
     id: event.args.positionKey.toString(),
     key: event.args.positionKey.toString(),
@@ -254,7 +295,7 @@ ponder.on("Oracle:PriceUpdate", async ({ event, context }) => {
   const token = event.args.token;
 
   await context.db.insert(tokenPrice).values({
-    id: `${event.block.number}-${event.transaction.hash}`,
+    id: token,
     token,
     price: price.toString(),
     timestamp: Number(event.block.timestamp),
@@ -284,5 +325,94 @@ ponder.on("MarketHandler:FundingFeeSet", async ({ event, context }) => {
     market: event.args.market,
     fundingFee: event.args.amount.toString(),
     timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("CuratorRegistry:CuratorAdded", async ({ event, context }) => {
+  await context.db.insert(curator).values({
+    id: event.args.curatorAddress,
+    name: event.args.name,
+    timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("CuratorFactory:CuratorContractDeployed", async ({ event, context }) => {
+  await context.db.insert(curator).values({
+    id: event.args.curatorContract,
+    curator: event.args.curator,
+    name: event.args.name,
+    contractAddress: event.args.curatorContract,
+    timestamp: Number(event.block.timestamp),
+  }).onConflictDoUpdate({
+    name: event.args.name,
+    contractAddress: event.args.curatorContract,
+    timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("VaultFactory:VaultDeployed", async ({ event, context }) => {
+  await context.db.insert(assetVault).values({
+    id: event.args.vault,
+    curator: event.args.curator,
+    asset: event.args.asset,
+    name: event.args.name,
+    timestamp: Number(event.block.timestamp),
+  })
+});
+
+ponder.on("AssetVault:MarketAdded", async ({ event, context }) => {
+  await context.db.insert(allocation).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    assetVault: event.log.address,
+    marketToken: event.args.market,
+    allocation: event.args.allocationPercentage.toString(),
+    curator: event.transaction.from,
+    timestamp: Number(event.block.timestamp),
+    transactionHash: event.transaction.hash,
+  }).onConflictDoUpdate({
+    assetVault: event.log.address,
+    allocation: event.args.allocationPercentage.toString(),
+    curator: event.transaction.from,
+    timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("AssetVault:MarketUpdated", async ({ event, context }) => {
+  await context.db.insert(allocation).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    assetVault: event.log.address,
+    marketToken: event.args.market,
+    allocation: event.args.allocationPercentage.toString(),
+    curator: event.transaction.from,
+    timestamp: Number(event.block.timestamp),
+  }).onConflictDoUpdate({
+    allocation: event.args.allocationPercentage.toString(),
+    timestamp: Number(event.block.timestamp),
+  });
+});
+
+ponder.on("AssetVault:Deposit", async ({ event, context }) => {
+  await context.db.insert(curatorVaultDeposit).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    assetVault: event.transaction.to,
+    amount: event.args.assets.toString(),
+    shares: event.args.shares.toString(),
+    user: event.args.user,
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
+  });
+});
+
+ponder.on("AssetVault:Withdraw", async ({ event, context }) => {
+  await context.db.insert(curatorVaultWithdrawal).values({
+    id: `${event.block.number}-${event.transaction.hash}`,
+    assetVault: event.transaction.to,
+    amount: event.args.assets.toString(),
+    shares: event.args.shares.toString(),
+    user: event.args.user,
+    timestamp: Number(event.block.timestamp),
+    blockNumber: Number(event.block.number),
+    transactionHash: event.transaction.hash,
   });
 });
