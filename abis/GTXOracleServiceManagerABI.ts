@@ -1,69 +1,8 @@
 export const GTXOracleServiceManagerABI = [
 	{
-		type: "constructor",
-		inputs: [
-			{
-				name: "_avsDirectory",
-				type: "address",
-				internalType: "address",
-			},
-			{
-				name: "_stakeRegistry",
-				type: "address",
-				internalType: "address",
-			},
-			{
-				name: "_rewardsCoordinator",
-				type: "address",
-				internalType: "address",
-			},
-			{
-				name: "_delegationManager",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "CLAIM_OWNER",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "MAX_PRICE_AGE",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "MAX_PRICE_DEVIATION",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "PRICE_PRECISION",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "SCALING_FACTOR",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
 		type: "function",
 		name: "allTaskHashes",
-		inputs: [{ name: "", type: "uint32", internalType: "uint32" }],
+		inputs: [{ name: "taskIndex", type: "uint32", internalType: "uint32" }],
 		outputs: [{ name: "", type: "bytes32", internalType: "bytes32" }],
 		stateMutability: "view",
 	},
@@ -71,75 +10,10 @@ export const GTXOracleServiceManagerABI = [
 		type: "function",
 		name: "allTaskResponses",
 		inputs: [
-			{ name: "", type: "address", internalType: "address" },
-			{ name: "", type: "uint32", internalType: "uint32" },
+			{ name: "operator", type: "address", internalType: "address" },
+			{ name: "taskIndex", type: "uint32", internalType: "uint32" },
 		],
 		outputs: [{ name: "", type: "bytes", internalType: "bytes" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "avsDirectory",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "createAVSRewardsSubmission",
-		inputs: [
-			{
-				name: "rewardsSubmissions",
-				type: "tuple[]",
-				internalType: "struct IRewardsCoordinator.RewardsSubmission[]",
-				components: [
-					{
-						name: "strategiesAndMultipliers",
-						type: "tuple[]",
-						internalType: "struct IRewardsCoordinator.StrategyAndMultiplier[]",
-						components: [
-							{
-								name: "strategy",
-								type: "address",
-								internalType: "contract IStrategy",
-							},
-							{
-								name: "multiplier",
-								type: "uint96",
-								internalType: "uint96",
-							},
-						],
-					},
-					{
-						name: "token",
-						type: "address",
-						internalType: "contract IERC20",
-					},
-					{ name: "amount", type: "uint256", internalType: "uint256" },
-					{
-						name: "startTimestamp",
-						type: "uint32",
-						internalType: "uint32",
-					},
-					{ name: "duration", type: "uint32", internalType: "uint32" },
-				],
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "deregisterOperatorFromAVS",
-		inputs: [{ name: "operator", type: "address", internalType: "address" }],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "getOperatorRestakedStrategies",
-		inputs: [{ name: "_operator", type: "address", internalType: "address" }],
-		outputs: [{ name: "", type: "address[]", internalType: "address[]" }],
 		stateMutability: "view",
 	},
 	{
@@ -153,13 +27,6 @@ export const GTXOracleServiceManagerABI = [
 			},
 		],
 		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "getRestakeableStrategies",
-		inputs: [],
-		outputs: [{ name: "", type: "address[]", internalType: "address[]" }],
 		stateMutability: "view",
 	},
 	{
@@ -222,92 +89,6 @@ export const GTXOracleServiceManagerABI = [
 	},
 	{
 		type: "function",
-		name: "marketFactory",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "maxBlockInterval",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "minBlockInterval",
-		inputs: [],
-		outputs: [{ name: "", type: "uint256", internalType: "uint256" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "owner",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "pairs",
-		inputs: [
-			{ name: "tokenAddress", type: "address", internalType: "address" },
-		],
-		outputs: [{ name: "tokenPair", type: "string", internalType: "string" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "prices",
-		inputs: [
-			{ name: "tokenAddress", type: "address", internalType: "address" },
-		],
-		outputs: [
-			{ name: "value", type: "uint256", internalType: "uint256" },
-			{ name: "timestamp", type: "uint256", internalType: "uint256" },
-			{ name: "blockNumber", type: "uint256", internalType: "uint256" },
-			{
-				name: "minBlockInterval",
-				type: "uint256",
-				internalType: "uint256",
-			},
-			{
-				name: "maxBlockInterval",
-				type: "uint256",
-				internalType: "uint256",
-			},
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "registerOperatorToAVS",
-		inputs: [
-			{ name: "operator", type: "address", internalType: "address" },
-			{
-				name: "operatorSignature",
-				type: "tuple",
-				internalType: "struct ISignatureUtils.SignatureWithSaltAndExpiry",
-				components: [
-					{ name: "signature", type: "bytes", internalType: "bytes" },
-					{ name: "salt", type: "bytes32", internalType: "bytes32" },
-					{ name: "expiry", type: "uint256", internalType: "uint256" },
-				],
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "renounceOwnership",
-		inputs: [],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
 		name: "requestNewOracleTask",
 		inputs: [
 			{
@@ -336,7 +117,7 @@ export const GTXOracleServiceManagerABI = [
 				],
 			},
 		],
-		outputs: [{ name: "taskId", type: "uint32", internalType: "uint32" }],
+		outputs: [{ name: "taskIndex", type: "uint32", internalType: "uint32" }],
 		stateMutability: "nonpayable",
 	},
 	{
@@ -349,7 +130,7 @@ export const GTXOracleServiceManagerABI = [
 				internalType: "address",
 			},
 		],
-		outputs: [{ name: "taskId", type: "uint32", internalType: "uint32" }],
+		outputs: [{ name: "taskIndex", type: "uint32", internalType: "uint32" }],
 		stateMutability: "nonpayable",
 	},
 	{
@@ -398,7 +179,7 @@ export const GTXOracleServiceManagerABI = [
 					},
 				],
 			},
-			{ name: "_price", type: "uint256", internalType: "uint256" },
+			{ name: "price", type: "uint256", internalType: "uint256" },
 			{
 				name: "referenceTaskIndex",
 				type: "uint32",
@@ -478,79 +259,6 @@ export const GTXOracleServiceManagerABI = [
 		stateMutability: "nonpayable",
 	},
 	{
-		type: "function",
-		name: "rewardsInitiator",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "setPrice",
-		inputs: [
-			{
-				name: "_tokenAddress",
-				type: "address",
-				internalType: "address",
-			},
-			{ name: "_price", type: "uint256", internalType: "uint256" },
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "setRewardsInitiator",
-		inputs: [
-			{
-				name: "newRewardsInitiator",
-				type: "address",
-				internalType: "address",
-			},
-		],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "sources",
-		inputs: [
-			{
-				name: "tokenAddress",
-				type: "address",
-				internalType: "address",
-			},
-			{ name: "", type: "uint256", internalType: "uint256" },
-		],
-		outputs: [
-			{ name: "name", type: "string", internalType: "string" },
-			{ name: "identifier", type: "string", internalType: "string" },
-			{ name: "network", type: "string", internalType: "string" },
-		],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "stakeRegistry",
-		inputs: [],
-		outputs: [{ name: "", type: "address", internalType: "address" }],
-		stateMutability: "view",
-	},
-	{
-		type: "function",
-		name: "transferOwnership",
-		inputs: [{ name: "newOwner", type: "address", internalType: "address" }],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
-		type: "function",
-		name: "updateAVSMetadataURI",
-		inputs: [{ name: "_metadataURI", type: "string", internalType: "string" }],
-		outputs: [],
-		stateMutability: "nonpayable",
-	},
-	{
 		type: "event",
 		name: "Initialize",
 		inputs: [
@@ -559,19 +267,6 @@ export const GTXOracleServiceManagerABI = [
 				type: "address",
 				indexed: false,
 				internalType: "address",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "Initialized",
-		inputs: [
-			{
-				name: "version",
-				type: "uint8",
-				indexed: false,
-				internalType: "uint8",
 			},
 		],
 		anonymous: false,
@@ -767,44 +462,6 @@ export const GTXOracleServiceManagerABI = [
 				type: "bytes",
 				indexed: false,
 				internalType: "bytes",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "OwnershipTransferred",
-		inputs: [
-			{
-				name: "previousOwner",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-			{
-				name: "newOwner",
-				type: "address",
-				indexed: true,
-				internalType: "address",
-			},
-		],
-		anonymous: false,
-	},
-	{
-		type: "event",
-		name: "RewardsInitiatorUpdated",
-		inputs: [
-			{
-				name: "prevRewardsInitiator",
-				type: "address",
-				indexed: false,
-				internalType: "address",
-			},
-			{
-				name: "newRewardsInitiator",
-				type: "address",
-				indexed: false,
-				internalType: "address",
 			},
 		],
 		anonymous: false,
