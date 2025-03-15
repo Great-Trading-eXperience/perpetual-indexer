@@ -107,27 +107,27 @@ export const price = onchainTable("price", (t) => ({
 	blockNumber: t.integer(),
 }));
 
-export const source = onchainTable(
-	"source",
-	(t) => ({
-		id: t.text().primaryKey(),
-		name: t.text(),
-		identifier: t.text(),
-		network: t.text(),
-		priceId: t.text().notNull(),
-	}),
-	(table: any) => ({
-		priceIdx: index().on(table.priceId), // Index for poolId
-	})
-);
+// export const source = onchainTable(
+// 	"source",
+// 	(t) => ({
+// 		id: t.text().primaryKey(),
+// 		name: t.text(),
+// 		identifier: t.text(),
+// 		network: t.text(),
+// 		priceId: t.text().notNull(),
+// 	}),
+// 	(table: any) => ({
+// 		priceIdx: index().on(table.priceId), // Index for poolId
+// 	})
+// );
 
-export const priceSourceRelation = relations(price, ({ many }) => ({
-	source: many(source),
-}));
+// export const priceSourceRelation = relations(price, ({ many }) => ({
+// 	source: many(source),
+// }));
 
-export const sourcPriceeRelation = relations(source, ({ one }) => ({
-	price: one(price, { fields: [source.priceId], references: [price.id] }),
-}));
+// export const sourcPriceeRelation = relations(source, ({ one }) => ({
+// 	price: one(price, { fields: [source.priceId], references: [price.id] }),
+// }));
 
 export const liquidation = onchainTable("liquidation", (t) => ({
 	id: t.text().primaryKey(),

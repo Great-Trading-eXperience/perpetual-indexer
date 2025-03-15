@@ -14,7 +14,7 @@ import {
 	position,
 	size,
 	price as tokenPrice,
-	source as sourcePrice,
+	// source as sourcePrice,
 } from "ponder:schema";
 
 ponder.on("MarketFactory:MarketCreated", async ({ event, context }) => {
@@ -385,34 +385,29 @@ ponder.on("OracleAVS:OraclePriceUpdated", async ({ event, context }) => {
 	await context.db
 		.insert(tokenPrice)
 		.values({
-			id: token,
+			id: event.transaction.hash,
 			token,
 			name: event.args.tokenPair,
 			price: price.toString(),
 			timestamp: Number(event.block.timestamp),
 			blockNumber: Number(event.block.number),
 			transactionHash: event.transaction.hash,
-		})
-		.onConflictDoUpdate({
-			token,
-			price: price.toString(),
-			timestamp: Number(event.block.timestamp),
 		});
 });
 
-ponder.on("OracleAVS:OracleSourceCreated", async ({ event, context }) => {
-	const sources = event.args.sources;
-	const token = event.args.tokenAddress;
+// ponder.on("OracleAVS:OracleSourceCreated", async ({ event, context }) => {
+// 	const sources = event.args.sources;
+// 	const token = event.args.tokenAddress;
 
-	for (const source of sources) {
-		const value = {
-			id: `${token}-${source.name}`,
-			priceId: token,
-			...source,
-		};
-		await context.db.insert(sourcePrice).values(value).onConflictDoNothing();
-	}
-});
+// 	for (const source of sources) {
+// 		const value = {
+// 			id: `${token}-${source.name}`,
+// 			priceId: token,
+// 			...source,
+// 		};
+// 		await context.db.insert(sourcePrice).values(value).onConflictDoNothing();
+// 	}
+// });
 
 ponder.on("MarketHandler:OpenInterestSet", async ({ event, context }) => {
 	await context.db.insert(openInterest).values({
